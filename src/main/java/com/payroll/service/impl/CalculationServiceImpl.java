@@ -3,14 +3,12 @@ package com.payroll.service.impl;
 import com.payroll.api.CalculationService;
 import com.payroll.model.*;
 
+import com.payroll.model.Calendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Implementation of the payroll calculation service.
@@ -52,6 +50,8 @@ public class CalculationServiceImpl implements CalculationService {
 
             logger.info("Processing payment for period: {}", paymentPeriodKey);
 
+            Set<String> uniqueIds = new HashSet<>();
+
             for (Employee employee : employees) {
                 // Skip inactive employees
                 if (employee.getStatus().equalsIgnoreCase("INACTIVE")) {
@@ -59,6 +59,12 @@ public class CalculationServiceImpl implements CalculationService {
                 }
 
                 String employeeId = employee.getEmployeeId();
+
+                // Skip duplicated Ids
+                if (!uniqueIds.add(employee.getEmployeeId())) {
+                    continue;
+                }
+
                 Rate rate = rateMap.get(employeeId);
                 TaxClass taxClass = taxClassMap.get(employee.getTaxClass());
 
