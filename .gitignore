@@ -80,7 +80,5 @@ build/
 # Test output
 test-output/
 
-# Application specific
-**/data/result/
 
 /tasks/
