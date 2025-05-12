@@ -182,10 +182,7 @@ public class CalculationServiceImpl implements CalculationService {
         This works although it would be cleaner to dynamically
         fetch the tax class to tax rate matching tax_class_data.csv
          */
-        if (taxClass.factor() == 1.0) return 0.8;
-        else if (taxClass.factor() == 3.0) return 0.9;
-        else if (taxClass.factor() == 4.0) return 0.85;
-        return 1.0;
+        return 1 - taxClass.factor();
     }
 
 
