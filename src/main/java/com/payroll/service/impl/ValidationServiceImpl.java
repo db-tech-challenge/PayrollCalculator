@@ -124,6 +124,7 @@ public class ValidationServiceImpl implements ValidationService {
         for (Overtime overtime : overtimes) {
             String employeeId = overtime.employeeId();
 
+            System.out.println("Overtime for" + employeeId);
             // Check if employee exists
             if (!employeeMap.containsKey(employeeId)) {
                 logger.warn("Overtime entry for non-existent employee: {}", employeeId);
