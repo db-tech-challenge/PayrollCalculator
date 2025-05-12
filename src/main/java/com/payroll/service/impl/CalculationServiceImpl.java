@@ -166,11 +166,23 @@ public class CalculationServiceImpl implements CalculationService {
         logger.debug("Days ratio for employee {}: {}", employee.getEmployeeId(), daysRatio);
         logger.debug("Tax factor for employee {}: {}", employee.getEmployeeId(), taxFactor);
 
-        return employee.getDaysWorked() * daysRatio * rate.rate() * taxFactor;
+        return employee.getDaysWorked() * daysRatio * rate.rate() * (1-taxFactor);
     }
 
     private static double getTaxFactor(TaxClass taxClass) {
-        return 1.0;// TODO: Implement tax factor calculation
+
+        if (taxClass.taxClass().equals("1")) {
+            return 0.2;
+        }
+        else if (taxClass.taxClass().equals("3")){
+            return 0.1;
+        }
+        else if (taxClass.taxClass().equals("4")){
+            return 0.15;
+        }
+        else {
+            return 0;
+        }
     }
 
 
