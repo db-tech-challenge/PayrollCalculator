@@ -211,10 +211,19 @@ public class CalculationServiceImpl implements CalculationService {
         return fullName.substring(0, 4).toUpperCase();
     }
 
+
     private static double getDaysRatio(List<Calendar> calendar, Payment payment) {
-        int workingDays = 20;
-        int daysInMonth = 30;
-        // TODO: Use calendar data
+        int workingDays = 0;
+        int daysInMonth = 0;
+
+        for (Calendar c : calendar) {
+            if (c.year() == payment.year() && c.month() == payment.month()) {
+                daysInMonth++;
+                if (c.isWorkingDay()) {
+                    workingDays++;
+                }
+            }
+        }
         return (double) workingDays / daysInMonth;
     }
 }
