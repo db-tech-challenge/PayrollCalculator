@@ -51,23 +51,6 @@ class PayrollApplicationTest {
         existNone("96391050");
     }
 
-//    @Test
-//    void test_06_02() {
-//        existNone("98391050");
-//    }
-//    @Test
-//    void test_06_03() {
-//        existNone("98391050");
-//    }
-//    @Test
-//    void test_06_04() {
-//        existOne("98391050");
-//    }
-//    @Test
-//    void test_06_05() {
-//        existOne("98391050");
-//    }
-//
     @Test
     void test_08_01() {
         PaymentResult msShenk = existOne("21233182");
