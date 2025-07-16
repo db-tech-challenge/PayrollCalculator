@@ -1,6 +1,6 @@
 # Payroll Calculator
 
-A console application for calculating employee salaries based on CSV file data.
+A console  application for calculating employee salaries based on CSV file data.
 
 ## Project Description
 
