@@ -1,0 +1,21 @@
+name: Trigger Payroll Tests
+
+on:
+  push:
+    branches:
+      - alpha
+      - beta
+      - gamma
+      - delta
+
+jobs:
+  trigger-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger PayrollChecker tests
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.DISPATCH_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"event_type": "${{ github.ref_name }}"}' \
+            https://api.github.com/repos/${{ github.repository_owner }}/PayrollChecker/dispatches
