@@ -106,3 +106,6 @@ If you encounter issues:
    ```
    mkdir -p data/result
    ```
+
+- Tested and validated locally on 16.07.2025 by Berkay Baris Algun.
+- All CSV files were successfully imported and payroll outputs were generated as expected.
