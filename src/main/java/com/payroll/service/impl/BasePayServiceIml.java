@@ -14,6 +14,7 @@ public class BasePayServiceIml implements BasePayService {
 
     private static final Logger logger = LoggerFactory.getLogger(BasePayServiceIml.class);
 
+    @Override
     public double calculateBasePay(Employee employee, Rate rate, Payment payment,
                                    TaxClass taxClass, List<Calendar> calendar) {
         double workDaysPayFactor = getDaysRatio(employee.getDaysWorked(), calendar, payment);
@@ -25,12 +26,13 @@ public class BasePayServiceIml implements BasePayService {
         return workDaysPayFactor * rate.rate() * taxFactor;
     }
 
+    @Override
     public double getDaysRatio(Integer daysWorked, List<Calendar> calendar, Payment payment) {
         return 1;
     }
 
+    @Override
     public double getTaxFactor(TaxClass taxClass) {
-        return 1;
+        return taxClass != null ? taxClass.factor() : 1.0;
     }
-
 }
