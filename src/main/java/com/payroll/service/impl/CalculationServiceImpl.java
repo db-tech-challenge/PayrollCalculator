@@ -115,32 +115,24 @@ public class CalculationServiceImpl implements CalculationService {
                 }
                 paymentDateString = adjustedPayment.toString();
 
-                // Create result (keep existing format for compatibility)
+
+                String breakdownString = String.format("Base: %.2f | Overtime: %.2f | Tax: %.2f | Net: %.2f", 
+                                                      grossBasePay, overtimePay, taxDeduction, totalPay);
+                
+
                 PaymentResult result = new PaymentResult(
                     employeeId,
                     totalPay,
                     paymentDateString,
                     generateSettlementAccount(employee),
-                    "EUR"
-                );
-
-                // Create detailed breakdown
-                String breakdownString = PayslipBreakdown.formatBreakdown(grossBasePay, overtimePay, taxDeduction, totalPay);
-                PayslipBreakdown breakdown = new PayslipBreakdown(
-                    employeeId,
-                    grossBasePay,
-                    overtimePay,
-                    grossTotal,
-                    taxDeduction,
-                    totalPay,
-                    paymentDateString,
-                    generateSettlementAccount(employee),
                     "EUR",
+                    netBasePay,
+                    overtimePay,
+                    taxDeduction,
                     breakdownString
                 );
 
                 results.add(result);
-                breakdowns.add(breakdown);
                 logger.info("Calculated payment for employee {}: {}", employeeId, result);
             }
         }
