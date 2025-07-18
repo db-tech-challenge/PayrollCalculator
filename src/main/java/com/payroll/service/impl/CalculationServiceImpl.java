@@ -1,6 +1,12 @@
 package com.payroll.service.impl;
 
-import static java.lang.Integer.parseInt;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.payroll.api.CalculationService;
 import com.payroll.model.Calendar;
@@ -10,12 +16,6 @@ import com.payroll.model.Payment;
 import com.payroll.model.PaymentResult;
 import com.payroll.model.Rate;
 import com.payroll.model.TaxClass;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the payroll calculation service.
@@ -124,7 +124,7 @@ public class CalculationServiceImpl implements CalculationService {
     }
 
     private static boolean isCologneHoliday(Payment payment, Employee employee) {
-        return payment.month() == 7
+        return payment.month() == 6
             && payment.year() == 2025
             && payment.paymentDate() == 9
             && "Cologne".equals(employee.getLocation());
