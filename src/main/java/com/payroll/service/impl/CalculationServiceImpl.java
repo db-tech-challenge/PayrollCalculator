@@ -91,9 +91,9 @@ public class CalculationServiceImpl implements CalculationService {
                 logger.debug("Total pay for employee {}: {}", employeeId, totalPay);
 
                 // Validate employee name
-                String fullName = employee.getFullName();
-                if (fullName == null || !fullName.matches("[\\p{L} /-]+")) {
-                    logger.info("Employee {} has an invalid name: {}", employeeId, fullName);
+                if (!employee.getFullName().matches("[\\p{L} /-]+")) {
+                    logger.info("Employee {} has an invalid name: {}", employeeId,
+                            employee.getFullName());
                     continue;
                 }
                 if (isCologneHoliday(payment, employee)) {
