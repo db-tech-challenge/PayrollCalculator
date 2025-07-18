@@ -61,7 +61,7 @@ public class OvertimeServiceImpl implements OvertimeService {
                 rate.employeeId(), overtimeHours, cappedHours);
         }
 
-        return cappedHours * rate.overtimeRate() * OVERTIME_COEFFICIENT;
+        return cappedHours * rate.overtimeRate();
     }
 
 }
