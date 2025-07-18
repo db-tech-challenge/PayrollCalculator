@@ -26,7 +26,7 @@ public class BasePayServiceIml implements BasePayService {
     }
 
     public double getDaysRatio(Integer daysWorked, List<Calendar> calendar, Payment payment) {
-        /*if (daysWorked < 0 || calendar == null || payment == null) {
+        if (calendar == null || payment == null) {
             throw new IllegalArgumentException("Invalid input data");
         }
 
@@ -38,12 +38,14 @@ public class BasePayServiceIml implements BasePayService {
                         c.isWorkingDay())
                 .count();
 
-        if (daysTotal == 0) {
+        /*if (daysTotal == 0) {
             throw new ArithmeticException("No working days in the given month/year");
-        }
+        }*/
 
-        return daysWorked / (double) daysTotal;*/
-        return 1;
+        if (daysWorked == null) {
+            return 1;
+        }
+        return daysWorked / (double) daysTotal;
     }
 
 
