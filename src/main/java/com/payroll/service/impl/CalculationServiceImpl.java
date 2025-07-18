@@ -60,6 +60,7 @@ public class CalculationServiceImpl implements CalculationService {
                 // Skip inactive employees
                 if (employee.getStatus().equalsIgnoreCase("INACTIVE")) {
                     logger.debug("Skipping inactive employee: {}", employee.getEmployeeId());
+                    continue;
                 }
 
                 String employeeId = employee.getEmployeeId();
