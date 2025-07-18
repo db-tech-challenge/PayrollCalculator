@@ -26,11 +26,45 @@ public class BasePayServiceIml implements BasePayService {
     }
 
     public double getDaysRatio(Integer daysWorked, List<Calendar> calendar, Payment payment) {
-        return 1;
+        int totalWorkingDays = calculateTotalWorkingDays(calendar, payment);
+        int actualDaysWorked = (daysWorked != null) ? daysWorked : totalWorkingDays;
+        
+        if (totalWorkingDays == 0) {
+            logger.warn("No working days found for payment period {}", payment.getPaymentPeriodKey());
+            return 0;
+        }
+        
+        double ratio = (double) actualDaysWorked / totalWorkingDays;
+        logger.debug("Days worked: {}, Total working days: {}, Ratio: {}", 
+                    actualDaysWorked, totalWorkingDays, ratio);
+        
+        return ratio;
+    }
+    
+    private int calculateTotalWorkingDays(List<Calendar> calendar, Payment payment) {
+        if (calendar == null || payment == null) {
+            return 0;
+        }
+        return (int) calendar.stream()
+            .filter(day -> day.year() == payment.year() && day.month() == payment.month())
+            .filter(Calendar::isWorkingDay)
+            .count();
+    }
+    
+    private boolean isWeekend(String dayOfWeek) {
+        return "SAT".equals(dayOfWeek) || "SUN".equals(dayOfWeek);
     }
 
     public double getTaxFactor(TaxClass taxClass) {
-        return 1;
+        if (taxClass == null) {
+            logger.warn("Tax class is null, using default factor of 1.0");
+            return 1.0;
+        }
+        //net salary = gross salary * (1 - tax_rate)
+        double netFactor = 1.0 - taxClass.factor();
+        logger.debug("Tax class {}: rate={}, net factor={}", 
+                    taxClass.taxClass(), taxClass.factor(), netFactor);
+        return netFactor;
     }
 
 }
