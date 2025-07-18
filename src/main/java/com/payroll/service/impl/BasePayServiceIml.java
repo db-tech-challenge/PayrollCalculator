@@ -22,7 +22,7 @@ public class BasePayServiceIml implements BasePayService {
         logger.debug("Days ratio for employee {}: {}", employee.getEmployeeId(), workDaysPayFactor);
         logger.debug("Tax factor for employee {}: {}", employee.getEmployeeId(), taxFactor);
 
-        return workDaysPayFactor * rate.rate() * taxFactor;
+        return workDaysPayFactor * rate.rate() * (1-taxFactor);
     }
 
     public double getDaysRatio(Integer daysWorked, List<Calendar> calendar, Payment payment) {
