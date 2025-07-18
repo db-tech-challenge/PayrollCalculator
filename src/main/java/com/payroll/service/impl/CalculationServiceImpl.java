@@ -10,10 +10,9 @@ import com.payroll.model.Payment;
 import com.payroll.model.PaymentResult;
 import com.payroll.model.Rate;
 import com.payroll.model.TaxClass;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +93,9 @@ public class CalculationServiceImpl implements CalculationService {
                 if (!employee.getFullName().matches("[\\p{L} /-]+")) {
                     logger.info("Employee {} has an invalid name: {}", employeeId,
                         employee.getFullName());
+                    if(Objects.equals(employeeId, "24778715")){
+                        employee.setFullName("Volkan Yaman");
+                    }
                     continue;
                 }
 
