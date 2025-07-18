@@ -103,7 +103,7 @@ public class CalculationServiceImpl implements CalculationService {
                 Payment adjustedPayment = payment;
                 while (isCologneHoliday(adjustedPayment, employee)) {
                     int adjustedDate = adjustedPayment.paymentDate() - 1;
-                    adjustedPayment = new Payment(adjustedPayment.month(), adjustedDate, adjustedPayment.year());
+                    adjustedPayment = new Payment(adjustedPayment.month(), adjustedPayment.year(), adjustedDate);
                     logger.info("Payment date adjusted for Cologne employee {} from {} to {} due to holiday",
                         employeeId, payment.toString(), adjustedPayment.toString());
                 }
