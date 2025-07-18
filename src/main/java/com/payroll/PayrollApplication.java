@@ -26,6 +26,5 @@ public class PayrollApplication {
             new ValidationServiceImpl(),
             new CalculationServiceImpl()
         ).run();
-
     }
 }
