@@ -26,7 +26,7 @@ public class BasePayServiceIml implements BasePayService {
     }
 
     public double getDaysRatio(Integer daysWorked, List<Calendar> calendar, Payment payment) {
-        if (daysWorked == null || daysWorked < 0 || calendar == null || payment == null) {
+        /*if (daysWorked < 0 || calendar == null || payment == null) {
             throw new IllegalArgumentException("Invalid input data");
         }
 
@@ -42,7 +42,8 @@ public class BasePayServiceIml implements BasePayService {
             throw new ArithmeticException("No working days in the given month/year");
         }
 
-        return daysWorked / (double) daysTotal;
+        return daysWorked / (double) daysTotal;*/
+        return 1;
     }
 
 
