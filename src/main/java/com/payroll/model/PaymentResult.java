@@ -9,6 +9,7 @@ public record PaymentResult(
     double pay,
     String date,
     String settlementAccount,
-    String currency
+    String currency,
+    double overtimePay
 ) {
 }

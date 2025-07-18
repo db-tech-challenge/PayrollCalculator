@@ -172,7 +172,9 @@ public class FileServiceImpl implements FileService {
                         Double.parseDouble(record.get("PAY")),
                         record.get("DATE"),
                         record.get("SETTLEMENT_ACCOUNT"),
-                        record.get("CURRENCY")
+                        record.get("CURRENCY"),
+                            Double.parseDouble(record.get("OVERTIMEPAY"))
+
                     );
                 } catch (Exception e) {
                     logger.warn("Failed to create PaymentResult: {}", e.getMessage());
@@ -226,12 +228,14 @@ public class FileServiceImpl implements FileService {
             writer.newLine();
 
             for (PaymentResult result : results) {
-                writer.write(String.format("%s;%.2f;%s;%s;%s",
+                writer.write(String.format("%s;%.2f;%s;%s;%s;%.2f",
                     result.employeeId(),
                     result.pay(),
                     result.date(),
                     result.settlementAccount(),
-                    result.currency()));
+                    result.currency(),
+                   result.overtimePay()));
+
                 writer.newLine();
 
                 logger.debug("Saved result: {}", result);

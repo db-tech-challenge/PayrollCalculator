@@ -84,7 +84,6 @@ public class CalculationServiceImpl implements CalculationService {
                 double overtimePay = overtimeService.calculateOvertimePay(rate, overtimeHours);
                 logger.debug("Overtime pay for employee {}: {} (from {} hours)",
                     employeeId, overtimePay, overtimeHours);
-
                 // Total pay
                 double totalPay = basePay + overtimePay;
                 logger.debug("Total pay for employee {}: {}", employeeId, totalPay);
@@ -110,7 +109,7 @@ public class CalculationServiceImpl implements CalculationService {
                     totalPay,
                     payment.toString(),
                     generateSettlementAccount(employee),
-                    "EUR"
+                    "EUR", overtimePay
 
                 );
 
