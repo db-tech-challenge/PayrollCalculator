@@ -125,18 +125,15 @@ public class CalculationServiceImpl implements CalculationService {
                 );
 
                 // Create detailed breakdown
-                String breakdownString = PayslipBreakdown.formatBreakdown(grossBasePay, overtimePay, taxDeduction, totalPay);
                 PayslipBreakdown breakdown = new PayslipBreakdown(
                     employeeId,
                     grossBasePay,
                     overtimePay,
-                    grossTotal,
                     taxDeduction,
                     totalPay,
                     paymentDateString,
                     generateSettlementAccount(employee),
-                    "EUR",
-                    breakdownString
+                    "EUR"
                 );
 
                 results.add(result);
@@ -199,19 +196,17 @@ public class CalculationServiceImpl implements CalculationService {
             java.nio.file.Files.createDirectories(breakdownPath.getParent());
             
             try (java.io.PrintWriter writer = new java.io.PrintWriter(java.nio.file.Files.newBufferedWriter(breakdownPath))) {
-                writer.println("EMPLOYEE_ID;GROSS_BASE_PAY;OVERTIME_PAY;GROSS_TOTAL;TAX_DEDUCTION;NET_PAY;DATE;SETTLEMENT_ACCOUNT;CURRENCY;BREAKDOWN");
+                writer.println("EMPLOYEE_ID;BASE;OVERTIME;DEDUCTION;PAY;DATE;SETTLEMENT_ACCOUNT;CURRENCY");
                 for (PayslipBreakdown breakdown : breakdowns) {
-                    writer.printf("%s;%.2f;%.2f;%.2f;%.2f;%.2f;%s;%s;%s;%s%n",
+                    writer.printf("%s;%.2f;%.2f;%.2f;%.2f;%s;%s;%s\n",
                         breakdown.employeeId(),
-                        breakdown.grossBasePay(),
-                        breakdown.overtimePay(),
-                        breakdown.grossTotal(),
-                        breakdown.taxDeduction(),
-                        breakdown.netPay(),
+                        breakdown.base(),
+                        breakdown.overtime(),
+                        breakdown.deduction(),
+                        breakdown.pay(),
                         breakdown.date(),
                         breakdown.settlementAccount(),
-                        breakdown.currency(),
-                        breakdown.breakdown()
+                        breakdown.currency()
                     );
                 }
             }
