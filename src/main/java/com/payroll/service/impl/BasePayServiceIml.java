@@ -46,7 +46,7 @@ public class BasePayServiceIml implements BasePayService {
             return 0;
         }
         return (int) calendar.stream()
-            .filter(day -> day.year() == payment.year() && day.month() == payment.month())
+                .filter(day -> day.year() == payment.getCalculationYear() && day.month() == payment.getCalculationMonth())
             .filter(Calendar::isWorkingDay)
             .count();
     }
