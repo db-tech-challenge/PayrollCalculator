@@ -41,7 +41,17 @@ public class BasePayServiceIml implements BasePayService {
     }
 
     public double getTaxFactor(TaxClass taxClass) {
-        return 1;
+        if (taxClass.taxClass().equalsIgnoreCase("4"))
+        {
+            return 0.15;
+        }
+        else if(taxClass.taxClass().equalsIgnoreCase("1"))
+        {
+            return 0.2;
+        }
+        else {
+            return 0.1;
+        }
     }
 
 }
