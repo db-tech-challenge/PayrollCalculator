@@ -98,18 +98,22 @@ public class CalculationServiceImpl implements CalculationService {
                     continue;
                 }
 
-                if (isCologneHoliday(payment, employee)) {
-                    logger.error(
-                        "Salary could not be paid for employee {} due to holiday in Cologne on {}",
-                        employeeId, payment);
-                    continue;
+                // Adjust payment date if it falls on a Cologne holiday
+                String paymentDateString;
+                Payment adjustedPayment = payment;
+                while (isCologneHoliday(adjustedPayment, employee)) {
+                    int adjustedDate = adjustedPayment.paymentDate() - 1;
+                    adjustedPayment = new Payment(adjustedPayment.month(), adjustedDate, adjustedPayment.year());
+                    logger.info("Payment date adjusted for Cologne employee {} from {} to {} due to holiday",
+                        employeeId, payment.toString(), adjustedPayment.toString());
                 }
+                paymentDateString = adjustedPayment.toString();
 
                 // Create result
                 PaymentResult result = new PaymentResult(
                     employeeId,
                     totalPay,
-                    payment.toString(),
+                    paymentDateString,
                     generateSettlementAccount(employee),
                     "EUR"
 
