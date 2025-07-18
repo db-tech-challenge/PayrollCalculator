@@ -28,7 +28,7 @@ public class OvertimeServiceImpl implements OvertimeService {
                 continue;
             }
 
-            String periodKey = date.getYear() + "-" + String.format("%02d", date.getMonthValue());
+            String periodKey = String.format("%d-%02d", date.getYear(), date.getMonthValue());
             Map<String, Integer> employeeOvertimes =
                 result.computeIfAbsent(employeeId, k -> new HashMap<>());
             employeeOvertimes.put(periodKey, employeeOvertimes.getOrDefault(periodKey, 0) + hours);
