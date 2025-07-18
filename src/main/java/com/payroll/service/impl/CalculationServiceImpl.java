@@ -8,6 +8,7 @@ import com.payroll.model.Employee;
 import com.payroll.model.Overtime;
 import com.payroll.model.Payment;
 import com.payroll.model.PaymentResult;
+import com.payroll.model.PayslipBreakdown;
 import com.payroll.model.Rate;
 import com.payroll.model.TaxClass;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class CalculationServiceImpl implements CalculationService {
 
         logger.info("Starting payroll calculation for {} employees", employees.size());
         List<PaymentResult> results = new ArrayList<>();
+        List<PayslipBreakdown> breakdowns = new ArrayList<>();
 
         if (payments == null || payments.isEmpty()) {
             logger.error("No payment data available for calculations");
@@ -76,19 +78,23 @@ public class CalculationServiceImpl implements CalculationService {
                     overtimeService.getOvertimeHours(overtimesByEmployeeAndMonth, employeeId,
                         payment.getPaymentPeriodKey());
 
-                // Base pay calculation
-                double basePay =
-                    basePayService.calculateBasePay(employee, rate, payment, taxClass, calendar);
-                logger.debug("Base pay for employee {}: {}", employeeId, basePay);
-
+                // Calculate salary components for breakdown
+                double workDaysRatio = basePayService.getDaysRatio(employee.getDaysWorked(), calendar, payment);
+                double grossBasePay = workDaysRatio * rate.rate();
+                double taxDeduction = grossBasePay * (taxClass != null ? taxClass.factor() : 0.0);
+                double netBasePay = grossBasePay - taxDeduction;
+                
                 // Overtime calculation
                 double overtimePay = overtimeService.calculateOvertimePay(rate, overtimeHours);
                 logger.debug("Overtime pay for employee {}: {} (from {} hours)",
                     employeeId, overtimePay, overtimeHours);
 
-                // Total pay
-                double totalPay = basePay + overtimePay;
-                logger.debug("Total pay for employee {}: {}", employeeId, totalPay);
+                // Total calculations
+                double grossTotal = grossBasePay + overtimePay;
+                double totalPay = netBasePay + overtimePay;
+                
+                logger.debug("Salary breakdown for employee {}: Gross Base: {}, Tax: {}, Net Base: {}, Overtime: {}, Total: {}", 
+                    employeeId, grossBasePay, taxDeduction, netBasePay, overtimePay, totalPay);
 
 
                 // Validate employee name
@@ -109,19 +115,43 @@ public class CalculationServiceImpl implements CalculationService {
                 }
                 paymentDateString = adjustedPayment.toString();
 
-                // Create result
+                // Create result (keep existing format for compatibility)
                 PaymentResult result = new PaymentResult(
                     employeeId,
                     totalPay,
                     paymentDateString,
                     generateSettlementAccount(employee),
                     "EUR"
-
                 );
 
+                // Create detailed breakdown
+                String breakdownString = PayslipBreakdown.formatBreakdown(grossBasePay, overtimePay, taxDeduction, totalPay);
+                PayslipBreakdown breakdown = new PayslipBreakdown(
+                    employeeId,
+                    grossBasePay,
+                    overtimePay,
+                    grossTotal,
+                    taxDeduction,
+                    totalPay,
+                    paymentDateString,
+                    generateSettlementAccount(employee),
+                    "EUR",
+                    breakdownString
+                );
 
                 results.add(result);
+                breakdowns.add(breakdown);
                 logger.info("Calculated payment for employee {}: {}", employeeId, result);
+            }
+        }
+
+        // Save detailed breakdowns to separate file (only if breakdowns exist)
+        if (!breakdowns.isEmpty()) {
+            try {
+                savePayslipBreakdowns(breakdowns);
+            } catch (Exception e) {
+                logger.warn("Failed to save payslip breakdowns: {}", e.getMessage());
+                // Don't throw exception to avoid breaking main functionality
             }
         }
 
@@ -163,5 +193,32 @@ public class CalculationServiceImpl implements CalculationService {
         return fullName.substring(0, 4).toUpperCase();
     }
 
+    private void savePayslipBreakdowns(List<PayslipBreakdown> breakdowns) {
+        try {
+            java.nio.file.Path breakdownPath = java.nio.file.Paths.get("data/result/payslip_breakdown.csv");
+            java.nio.file.Files.createDirectories(breakdownPath.getParent());
+            
+            try (java.io.PrintWriter writer = new java.io.PrintWriter(java.nio.file.Files.newBufferedWriter(breakdownPath))) {
+                writer.println("EMPLOYEE_ID;GROSS_BASE_PAY;OVERTIME_PAY;GROSS_TOTAL;TAX_DEDUCTION;NET_PAY;DATE;SETTLEMENT_ACCOUNT;CURRENCY;BREAKDOWN");
+                for (PayslipBreakdown breakdown : breakdowns) {
+                    writer.printf("%s;%.2f;%.2f;%.2f;%.2f;%.2f;%s;%s;%s;%s%n",
+                        breakdown.employeeId(),
+                        breakdown.grossBasePay(),
+                        breakdown.overtimePay(),
+                        breakdown.grossTotal(),
+                        breakdown.taxDeduction(),
+                        breakdown.netPay(),
+                        breakdown.date(),
+                        breakdown.settlementAccount(),
+                        breakdown.currency(),
+                        breakdown.breakdown()
+                    );
+                }
+            }
+            logger.info("Saved {} payslip breakdowns to {}", breakdowns.size(), breakdownPath);
+        } catch (Exception e) {
+            logger.warn("Error saving payslip breakdowns: {}", e.getMessage());
+        }
+    }
 
 }
