@@ -9,6 +9,14 @@ public record PaymentResult(
     double pay,
     String date,
     String settlementAccount,
-    String currency
+    String currency,
+    double basePay,
+    double overtimePay,
+    double deductions,
+    String breakdown
 ) {
+
+    public PaymentResult(String employeeId, double pay, String date, String settlementAccount, String currency) {
+        this(employeeId, pay, date, settlementAccount, currency, 0.0, 0.0, 0.0, "");
+    }
 }

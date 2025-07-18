@@ -222,16 +222,20 @@ public class FileServiceImpl implements FileService {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write("EMPLOYEE_ID;PAY;DATE;SETTLEMENT_ACCOUNT;CURRENCY");
+            writer.write("EMPLOYEE_ID;PAY;DATE;SETTLEMENT_ACCOUNT;CURRENCY;BASE_PAY;OVERTIME_PAY;DEDUCTIONS;BREAKDOWN");
             writer.newLine();
 
             for (PaymentResult result : results) {
-                writer.write(String.format("%s;%.2f;%s;%s;%s",
+                writer.write(String.format("%s;%.2f;%s;%s;%s;%.2f;%.2f;%.2f;%s",
                     result.employeeId(),
                     result.pay(),
                     result.date(),
                     result.settlementAccount(),
-                    result.currency()));
+                    result.currency(),
+                    result.basePay(),
+                    result.overtimePay(),
+                    result.deductions(),
+                    result.breakdown()));
                 writer.newLine();
 
                 logger.debug("Saved result: {}", result);
