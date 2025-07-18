@@ -10,9 +10,10 @@ import com.payroll.model.Payment;
 import com.payroll.model.PaymentResult;
 import com.payroll.model.Rate;
 import com.payroll.model.TaxClass;
-
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,6 @@ public class CalculationServiceImpl implements CalculationService {
                 // Skip inactive employees
                 if (employee.getStatus().equalsIgnoreCase("INACTIVE")) {
                     logger.debug("Skipping inactive employee: {}", employee.getEmployeeId());
-                    continue;
                 }
 
                 String employeeId = employee.getEmployeeId();
@@ -91,17 +91,16 @@ public class CalculationServiceImpl implements CalculationService {
 
 
                 // Validate employee name
-                if (!employee.getFullName().matches("[\\p{L} /-]+")) {
+                if (employee.getFullName() == null || !employee.getFullName().matches("[\\p{L} /-]+")) {
                     logger.info("Employee {} has an invalid name: {}", employeeId,
                         employee.getFullName());
                     continue;
                 }
 
                 if (isCologneHoliday(payment, employee)) {
-                    logger.error(
-                        "Salary could not be paid for employee {} due to holiday in Cologne on {}",
-                        employeeId, payment);
-                    continue;
+                    logger.warn(
+                        "Date of payments is on Cologne holiday",
+                        employeeId);
                 }
 
                 // Create result
