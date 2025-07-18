@@ -33,6 +33,6 @@ public class BasePayServiceIml implements BasePayService {
 
     @Override
     public double getTaxFactor(TaxClass taxClass) {
-        return taxClass != null ? taxClass.factor() : 1.0;
+        return taxClass != null ? 1.0 - taxClass.factor() : 1.0;
     }
 }
