@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Implementation of the payroll calculation service.
@@ -96,18 +98,23 @@ public class CalculationServiceImpl implements CalculationService {
                     continue;
                 }
 
-                if (isCologneHoliday(payment, employee)) {
-                    logger.error(
-                        "Salary could not be paid for employee {} due to holiday in Cologne on {}",
-                        employeeId, payment);
-                    continue;
-                }
+                LocalDate scheduledDate = LocalDate.of(payment.year(), payment.month(), payment.paymentDate());
 
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M.d.yyyy");
+                String formattedDate = scheduledDate.format(formatter);
+
+                if (isCologneHoliday(payment, employee)) {
+                    logger.info(
+                        "Salary could not be paid for employee {} on {} due to holiday in Cologne. Adjusting schedule date to previous working day",
+                        employeeId, payment);
+                    scheduledDate = scheduledDate.minusDays(1);
+                    formattedDate = scheduledDate.format(formatter);
+                }
                 // Create result
                 PaymentResult result = new PaymentResult(
                     employeeId,
                     totalPay,
-                    payment.toString(),
+                    formattedDate,
                     generateSettlementAccount(employee),
                     "EUR", overtimePay
 
@@ -156,6 +163,4 @@ public class CalculationServiceImpl implements CalculationService {
         }
         return fullName.substring(0, 4).toUpperCase();
     }
-
-
 }
