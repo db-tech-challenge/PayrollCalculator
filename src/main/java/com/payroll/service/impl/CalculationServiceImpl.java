@@ -89,14 +89,12 @@ public class CalculationServiceImpl implements CalculationService {
                 double totalPay = basePay + overtimePay;
                 logger.debug("Total pay for employee {}: {}", employeeId, totalPay);
 
-
                 // Validate employee name
                 String fullName = employee.getFullName();
-                if (fullName == null || !fullName.matches("[\\p{L} /-]+")) {
-                    logger.info("Employee {} has an invalid name: {}", employeeId, fullName);
+                if (fullName == null || !fullName.matches("[\\p{L}0-9 ./'’\"-]+")) {
+                    logger.warn("Employee {} has invalid/missing full name: {}", employeeId, fullName);
                     continue;
                 }
-
                 if (isCologneHoliday(payment, employee)) {
                     logger.error(
                         "Salary could not be paid for employee {} due to holiday in Cologne on {}",
