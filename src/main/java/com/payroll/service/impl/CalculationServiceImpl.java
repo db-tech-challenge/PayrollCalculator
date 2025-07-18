@@ -11,10 +11,12 @@ import com.payroll.model.PaymentResult;
 import com.payroll.model.Rate;
 import com.payroll.model.TaxClass;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
+import java.util.HashMap;
+import java.util.HashSet;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -55,15 +57,25 @@ public class CalculationServiceImpl implements CalculationService {
         for (Payment payment : payments) {
 
             logger.info("Processing payment for period: {}", payment.getPaymentPeriodKey());
+            
+            // to track processed employees to prevent duplicate payments
+            Set<String> processedEmployees = new HashSet<>();
 
             for (Employee employee : employees) {
+                String employeeId = employee.getEmployeeId();
+                
+                // ship this if have already processed to prevent duplicate payments
+                if (processedEmployees.contains(employeeId)) {
+                    logger.warn("Skipping duplicate employee record for ID: {}", employeeId);
+                    continue;
+                }
+                
                 // Skip inactive employees
                 if (employee.getStatus().equalsIgnoreCase("INACTIVE")) {
                     logger.debug("Skipping inactive employee: {}", employee.getEmployeeId());
                     continue;
                 }
 
-                String employeeId = employee.getEmployeeId();
                 Rate rate = rateMap.get(employeeId);
                 TaxClass taxClass = taxClassMap.get(employee.getTaxClass());
 
@@ -116,6 +128,7 @@ public class CalculationServiceImpl implements CalculationService {
 
 
                 results.add(result);
+                processedEmployees.add(employeeId); // Mark as processed to prevent duplicates
                 logger.info("Calculated payment for employee {}: {}", employeeId, result);
             }
         }
