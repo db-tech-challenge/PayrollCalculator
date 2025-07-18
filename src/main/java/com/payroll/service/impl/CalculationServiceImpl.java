@@ -94,9 +94,6 @@ public class CalculationServiceImpl implements CalculationService {
                 if (!employee.getFullName().matches("[\\p{L} /-]+")) {
                     logger.info("Employee {} has an invalid name: {}", employeeId,
                         employee.getFullName());
-                    if(Objects.equals(employeeId, "24778715")){
-                        employee.setFullName("Volkan Yaman");
-                    }
                     continue;
                 }
 
