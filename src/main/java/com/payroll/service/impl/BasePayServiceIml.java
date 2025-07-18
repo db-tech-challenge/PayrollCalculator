@@ -26,7 +26,18 @@ public class BasePayServiceIml implements BasePayService {
     }
 
     public double getDaysRatio(Integer daysWorked, List<Calendar> calendar, Payment payment) {
-        return 1;
+        int calculationMonth = payment.getCalculationMonth();
+        int calculationYear = payment.getCalculationYear();
+        double daysTotal = 0;
+        for(int i = calendar.size(); i > 0; i++) {
+            Calendar currentCalendar = calendar.get(i);
+            if(currentCalendar.year() == calculationYear && currentCalendar.month() == calculationMonth && currentCalendar.isWorkingDay()){
+                daysTotal++;
+            }
+        }
+
+        return daysWorked / daysTotal;
+
     }
 
     public double getTaxFactor(TaxClass taxClass) {
