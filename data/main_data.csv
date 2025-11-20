@@ -1,4 +1,4 @@
-name;Location;Employee ID;Tax Class;AT Level;Status;Days Worked;Phone Number;Birthday;Password
+Name;Location;Employee ID;Tax Class;AT Level;Status;Days Worked;Phone Number;Birthday;Password
 Henner Römer;Leipzig;69819545;4;AT2;ACTIVE;null;0173965019;1978-08-07;JXXN3qnZgg
 Svenja Geisler;Berlin;45151585;1;AT2;ACTIVE;null;0155565119;1973-09-06;16lhR5Qt8M
 Aline Walter;Berlin;42600391;1;AT1;ACTIVE;null;0164290421;1990-05-15;Jdf1JX2fE5
