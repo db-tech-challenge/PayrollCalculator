@@ -20,6 +20,6 @@ public record Payment(int month, int year, int paymentDate) {
     }
 
     public String toString() {
-        return  month + "." + paymentDate + "." + year;
+        return format("%04d-%02d-%02d", year, month, paymentDate);
     }
 }
