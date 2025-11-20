@@ -102,6 +102,19 @@ public class CalculationServiceImpl implements CalculationService {
                     logger.error(
                         "Salary could not be paid for employee {} due to holiday in Dresden on {}",
                         employeeId, payment);
+
+                    PaymentResult result = new PaymentResult(
+                        employeeId,
+                        totalPay,
+                        payment.previousDay().toString(),
+                        generateSettlementAccount(employee),
+                        "EUR"
+
+                    );
+
+
+                    results.add(result);
+                    logger.info("Calculated payment for employee {}: {}", employeeId, result);
                     continue;
                 }
 
