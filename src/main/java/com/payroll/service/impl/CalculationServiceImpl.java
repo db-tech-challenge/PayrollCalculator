@@ -97,9 +97,9 @@ public class CalculationServiceImpl implements CalculationService {
                     continue;
                 }
 
-                if (isCologneHoliday(payment, employee)) {
+                if (isDresdenHoliday(payment, employee)) {
                     logger.error(
-                        "Salary could not be paid for employee {} due to holiday in Cologne on {}",
+                        "Salary could not be paid for employee {} due to holiday in Dresden on {}",
                         employeeId, payment);
                     continue;
                 }
@@ -124,11 +124,11 @@ public class CalculationServiceImpl implements CalculationService {
         return results;
     }
 
-    private static boolean isCologneHoliday(Payment payment, Employee employee) {
-        return payment.month() == 7
+    private static boolean isDresdenHoliday(Payment payment, Employee employee) {
+        return payment.month() == 11
             && payment.year() == 2025
-            && payment.paymentDate() == 9
-            && "Cologne".equals(employee.getLocation());
+            && payment.paymentDate() == 19
+            && "Dresden".equals(employee.getLocation());
     }
 
 
