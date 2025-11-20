@@ -30,7 +30,7 @@ public class BasePayServiceIml implements BasePayService {
     }
 
     public double getTaxFactor(TaxClass taxClass) {
-        return 1;
+        return 1.f - taxClass.factor();
     }
 
 }
