@@ -26,7 +26,14 @@ public class BasePayServiceIml implements BasePayService {
     }
 
     public double getDaysRatio(Integer daysWorked, List<Calendar> calendar, Payment payment) {
-        return 1;
+        if (daysWorked == null) {
+            return 1;
+        }
+        return (double) daysWorked / calendar.stream()
+            .filter(c -> c.month() == payment.month()-1)
+            .filter(c -> c.year() == payment.year())
+            .filter(Calendar::isWorkingDay)
+            .count();
     }
 
     public double getTaxFactor(TaxClass taxClass) {
