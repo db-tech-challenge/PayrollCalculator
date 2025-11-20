@@ -134,7 +134,7 @@ Contains location-specific holidays that may affect working days calculation.
 YEAR;MONTH;DAY;DAY_OF_WEEK;LOCATION
 
 **Example:**  
-2025;07;09;WED;Cologne
+2025;07;09;WED;Dresden
 
 **Fields:**
 - **YEAR**: Year
