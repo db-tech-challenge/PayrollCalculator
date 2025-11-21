@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of the payroll calculation service.
  */
+
 public class CalculationServiceImpl implements CalculationService {
     private static final Logger logger = LoggerFactory.getLogger(CalculationServiceImpl.class);
 
@@ -35,7 +36,6 @@ public class CalculationServiceImpl implements CalculationService {
         List<TaxClass> taxClasses,
         List<Calendar> calendar
     ) {
-
         logger.info("Starting payroll calculation for {} employees", employees.size());
         List<PaymentResult> results = new ArrayList<>();
 
@@ -87,8 +87,20 @@ public class CalculationServiceImpl implements CalculationService {
                     employeeId, overtimePay, overtimeHours);
 
                 // Total pay
+                // Total gross pay
                 double totalPay = basePay + overtimePay;
-                logger.debug("Total pay for employee {}: {}", employeeId, totalPay);
+
+
+                double netPay = totalPay; // default
+
+                TaxClass employeeTaxClass = taxClassMap.get(employee.getTaxClass());
+                if (employeeTaxClass != null) {
+                    double taxRate = employeeTaxClass.factor(); // e.g. 0.20 for 20%
+                    netPay = totalPay - (totalPay * taxRate);
+                } else {
+                    logger.warn("No tax class found for employee {} with taxClass={}, using gross pay",
+                            employeeId, employee.getTaxClass());
+                }
 
 
                 // Validate employee name
@@ -98,9 +110,9 @@ public class CalculationServiceImpl implements CalculationService {
                     continue;
                 }
 
-                if (isDresdenHoliday(payment, employee)) {
+                if (isCologneHoliday(payment, employee)) {
                     logger.error(
-                        "Salary could not be paid for employee {} due to holiday in Dresden on {}",
+                        "Salary could not be paid for employee {} due to holiday in Cologne on {}",
                         employeeId, payment);
                     continue;
                 }
@@ -108,7 +120,7 @@ public class CalculationServiceImpl implements CalculationService {
                 // Create result
                 PaymentResult result = new PaymentResult(
                     employeeId,
-                    totalPay,
+                    netPay,
                     payment.toString(),
                     generateSettlementAccount(employee),
                     "EUR"
@@ -125,11 +137,11 @@ public class CalculationServiceImpl implements CalculationService {
         return results;
     }
 
-    private static boolean isDresdenHoliday(Payment payment, Employee employee) {
-        return payment.month() == 11
+    private static boolean isCologneHoliday(Payment payment, Employee employee) {
+        return payment.month() == 7
             && payment.year() == 2025
-            && payment.paymentDate() == 19
-            && "Dresden".equals(employee.getLocation());
+            && payment.paymentDate() == 9
+            && "Cologne".equals(employee.getLocation());
     }
 
 
