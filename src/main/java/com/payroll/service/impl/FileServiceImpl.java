@@ -78,7 +78,7 @@ public class FileServiceImpl implements FileService {
         return loadFromCsv(MAIN_DATA_PATH, record -> {
             try {
                 return new Employee(
-                    record.get("Name"),
+                    record.get("name"),
                     record.get("Location"),
                     record.get("Employee ID"),
                     record.get("Tax Class"),
