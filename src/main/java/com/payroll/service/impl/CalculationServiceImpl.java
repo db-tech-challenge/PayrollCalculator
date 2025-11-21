@@ -1,6 +1,6 @@
+
 package com.payroll.service.impl;
 
-import static java.lang.Integer.parseInt;
 
 import com.payroll.api.CalculationService;
 import com.payroll.model.Calendar;
@@ -28,12 +28,12 @@ public class CalculationServiceImpl implements CalculationService {
 
     @Override
     public List<PaymentResult> calculatePayroll(
-        List<Employee> employees,
-        List<Rate> rates,
-        List<Payment> payments,
-        List<Overtime> overtimes,
-        List<TaxClass> taxClasses,
-        List<Calendar> calendar
+            List<Employee> employees,
+            List<Rate> rates,
+            List<Payment> payments,
+            List<Overtime> overtimes,
+            List<TaxClass> taxClasses,
+            List<Calendar> calendar
     ) {
 
         logger.info("Starting payroll calculation for {} employees", employees.size());
@@ -44,22 +44,24 @@ public class CalculationServiceImpl implements CalculationService {
             return results;
         }
 
+
         // Create maps for faster lookups
         Map<String, Rate> rateMap = convertRatesToMap(rates);
         Map<String, TaxClass> taxClassMap = convertTaxClassesToMap(taxClasses);
 
         // Group overtimes by employee ID and month
         Map<String, Map<String, Integer>> overtimesByEmployeeAndMonth =
-            overtimeService.aggregateOvertimesByMonth(overtimes);
+                overtimeService.aggregateOvertimesByMonth(overtimes);
 
         for (Payment payment : payments) {
 
             logger.info("Processing payment for period: {}", payment.getPaymentPeriodKey());
 
-            for (Employee employee : employees) {
+            for (Employee employee : employees) { //änderung
                 // Skip inactive employees
                 if (employee.getStatus().equalsIgnoreCase("INACTIVE")) {
                     logger.debug("Skipping inactive employee: {}", employee.getEmployeeId());
+                    continue;
                 }
 
                 String employeeId = employee.getEmployeeId();
@@ -70,46 +72,70 @@ public class CalculationServiceImpl implements CalculationService {
                     continue; // Skip if no rate data is available
                 }
 
+                if (taxClass == null) {
+                    logger.error("No tax class found for employee {} (tax class: {}), skipping",
+                            employeeId, employee.getTaxClass());
+                    continue;
+                }
+
                 // Get overtime hours for this employee and month
                 int overtimeHours =
-                    overtimeService.getOvertimeHours(overtimesByEmployeeAndMonth, employeeId,
-                        payment.getPaymentPeriodKey());
+                        overtimeService.getOvertimeHours(overtimesByEmployeeAndMonth, employeeId,
+                                payment.getPaymentPeriodKey());
 
                 // Base pay calculation
                 double basePay =
-                    basePayService.calculateBasePay(employee, rate, payment, taxClass, calendar);
+                        basePayService.calculateBasePay(employee, rate, payment, taxClass, calendar);
                 logger.debug("Base pay for employee {}: {}", employeeId, basePay);
 
                 // Overtime calculation
                 double overtimePay = overtimeService.calculateOvertimePay(rate, overtimeHours);
                 logger.debug("Overtime pay for employee {}: {} (from {} hours)",
-                    employeeId, overtimePay, overtimeHours);
+                        employeeId, overtimePay, overtimeHours);
 
                 // Total pay
-                double totalPay = basePay + overtimePay;
-                logger.debug("Total pay for employee {}: {}", employeeId, totalPay);
+                // Gross pay (before tax)
+                double grossPay = basePay + overtimePay;
+                logger.debug("Gross pay for employee {}: {}", employeeId, grossPay);
+
+                // Tax calculation
+                double taxRate = taxClass.factor();
+                double taxAmount = grossPay * taxRate;
+                logger.debug("Tax for employee {}: {} (rate: {})", employeeId, taxAmount, taxRate);
+
+                // Net pay (after tax)
+                double totalPay = grossPay - taxAmount;
+                logger.debug("Net pay for employee {} after tax: {}", employeeId, totalPay);
+
+                // Validate not negative
+                if (totalPay < 0) {
+                    logger.error("Calculated negative pay for employee {}: {}. Gross: {}, Tax: {}. Skipping.",
+                            employeeId, totalPay, grossPay, taxAmount);
+                    continue;
+                }
+
 
                 // Validate employee name
                 if (!employee.getFullName().matches("[\\p{L} /-]+")) {
                     logger.info("Employee {} has an invalid name: {}", employeeId,
-                        employee.getFullName());
+                            employee.getFullName());
                     continue;
                 }
 
-                if (isDresdenHoliday(payment, employee)) {
+                if (isCologneHoliday(payment, employee)) {
                     logger.error(
-                        "Salary could not be paid for employee {} due to holiday in Dresden on {}",
-                        employeeId, payment);
+                            "Salary could not be paid for employee {} due to holiday in Cologne on {}",
+                            employeeId, payment);
                     continue;
                 }
 
                 // Create result
                 PaymentResult result = new PaymentResult(
-                    employeeId,
-                    totalPay,
-                    payment.toString(),
-                    generateSettlementAccount(employee),
-                    "EUR"
+                        employeeId,
+                        totalPay,
+                        payment.toString(),
+                        generateSettlementAccount(employee),
+                        "EUR"
 
                 );
 
@@ -123,11 +149,11 @@ public class CalculationServiceImpl implements CalculationService {
         return results;
     }
 
-    private static boolean isDresdenHoliday(Payment payment, Employee employee) {
-        return payment.month() == 11
-            && payment.year() == 2025
-            && payment.paymentDate() == 19
-            && "Dresden".equals(employee.getLocation());
+    private static boolean isCologneHoliday(Payment payment, Employee employee) {
+        return payment.month() == 7
+                && payment.year() == 2025
+                && payment.paymentDate() == 9
+                && "Cologne".equals(employee.getLocation());
     }
 
 
@@ -151,7 +177,7 @@ public class CalculationServiceImpl implements CalculationService {
         String fullName = employee.getFullName();
         if (fullName == null || fullName.length() < 4) {
             logger.warn("Cannot generate settlement account for employee {}: invalid name",
-                employee.getEmployeeId());
+                    employee.getEmployeeId());
             return "INVALID_ACCOUNT";
         }
         return fullName.substring(0, 4).toUpperCase();
