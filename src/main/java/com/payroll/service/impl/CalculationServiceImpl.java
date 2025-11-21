@@ -62,6 +62,7 @@ public class CalculationServiceImpl implements CalculationService {
                     logger.debug("Skipping inactive employee: {}", employee.getEmployeeId());
                 }
 
+
                 String employeeId = employee.getEmployeeId();
                 Rate rate = rateMap.get(employeeId);
                 TaxClass taxClass = taxClassMap.get(employee.getTaxClass());
