@@ -60,7 +60,12 @@ public class CalculationServiceImpl implements CalculationService {
                 // Skip inactive employees
                 if (employee.getStatus().equalsIgnoreCase("INACTIVE")) {
                     logger.debug("Skipping inactive employee: {}", employee.getEmployeeId());
-                }
+                
+                continue; 
+            }
+
+                //sonst ausrechnen
+
 
                 String employeeId = employee.getEmployeeId();
                 Rate rate = rateMap.get(employeeId);
@@ -119,6 +124,7 @@ public class CalculationServiceImpl implements CalculationService {
                 logger.info("Calculated payment for employee {}: {}", employeeId, result);
             }
         }
+        
 
         logger.info("Payroll calculation completed with {} payment results", results.size());
         return results;
