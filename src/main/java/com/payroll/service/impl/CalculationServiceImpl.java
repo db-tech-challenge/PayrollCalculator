@@ -89,6 +89,10 @@ public class CalculationServiceImpl implements CalculationService {
                 double totalPay = basePay + overtimePay;
                 logger.debug("Total pay for employee {}: {}", employeeId, totalPay);
 
+                if (employee.getFullName()==null) {
+                    logger.info("Employee {} has no name: {}", employeeId);
+                    continue;
+                }
 
                 // Validate employee name
                 if (!employee.getFullName().matches("[\\p{L} /-]+")) {
