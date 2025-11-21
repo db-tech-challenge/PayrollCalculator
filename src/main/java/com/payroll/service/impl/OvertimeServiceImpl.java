@@ -14,7 +14,7 @@ public class OvertimeServiceImpl implements OvertimeService {
 
     private static final Logger logger = LoggerFactory.getLogger(OvertimeServiceImpl.class);
     private static final double OVERTIME_COEFFICIENT = 1.5;
-    private static final int MAX_OVERTIME_HOURS = 12; // Maximum allowed overtime hours
+    private static final int MAX_OVERTIME_HOURS = 10; // Maximum allowed overtime hours
 
     public Map<String, Map<String, Integer>> aggregateOvertimesByMonth(List<Overtime> overtimes) {
         Map<String, Map<String, Integer>> result = new HashMap<>();
